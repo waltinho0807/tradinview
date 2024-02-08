@@ -83,6 +83,6 @@ async function newOrder (quantity, side) {
      }
  }
  
-app.listen(process.env.PORT, () => {
+app.listen(process.env.PORT || PORT, () => {
     console.log("Start server at" + process.env.PORT || PORT)
 });
