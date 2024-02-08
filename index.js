@@ -9,7 +9,7 @@ const app = express();
 app.use(express.json());
 
 async function connectDB () {
-    mongoose.connect(process.env.DATABASE_URL).then(() => {
+    mongoose.connect(process.env.DATABASE_URL || DATABASE_URL).then(() => {
         console.log("conectado com o banco")
     });
 }
@@ -52,7 +52,7 @@ const crypto = require('crypto')
 async function newOrder (quantity, side) {
 
     const data = {
-     symbol: process.env.SYMBOL,
+     symbol: process.env.SYMBOL || SYMBOL,
      type: 'MARKET',
      side,
      quantity
@@ -62,7 +62,7 @@ async function newOrder (quantity, side) {
     const recvWindow = 60000;
  
     const signature = crypto
-      .createHmac('sha256', process.env.SECRET_KEY)
+      .createHmac('sha256', process.env.SECRET_KEY || SECRET_KEY)
       .update(`${new URLSearchParams({...data, timestamp, recvWindow})}`)
       .digest('hex');
      
@@ -73,7 +73,7 @@ async function newOrder (quantity, side) {
          const result = await axios({
              method: 'POST',
              url: `${process.env.API_URL}/v3/order${qs}`,
-             headers: {'X-MBX-APIKEY': process.env.API_KEY}
+             headers: {'X-MBX-APIKEY': process.env.API_KEY || API_KEY}
          });
  
          console.log(result.data)
@@ -84,5 +84,5 @@ async function newOrder (quantity, side) {
  }
  
 app.listen(process.env.PORT, () => {
-    console.log("Start server at" + process.env.PORT)
+    console.log("Start server at" + process.env.PORT || PORT)
 });
