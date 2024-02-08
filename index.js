@@ -1,7 +1,8 @@
 require('dotenv').config()
 const express = require('express');
 const mongoose = require('mongoose');
-const position = require("./model/Position")
+const position = require("./model/Position");
+const order = require("./model/Orders");
 
 
 const app = express();
@@ -43,7 +44,8 @@ app.use('/vender', async (req, res, next) => {
 }); 
 
 app.use('/', (req, res, next) => {
-    console.log("Hello world")
+    console.log("Hello world");
+    
 });
 
 const axios = require('axios')
@@ -76,7 +78,21 @@ async function newOrder (quantity, side) {
              headers: {'X-MBX-APIKEY': process.env.API_KEY || API_KEY}
          });
  
-         console.log(result.data)
+        // console.log(result.data.symbol);
+
+         let orderStruture = {
+            orderId: result.data.orderId,
+            symbol: result.data.symbol,
+            quantity: result.data.origQty,
+            side: result.data.side,
+            price: result.data.fills[0].price
+         }
+         
+         let newOrder = new order(orderStruture);
+
+         await newOrder.save();
+         
+         console.log(orderStruture);
  
      } catch (error) {
          console.log(error)
